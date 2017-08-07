@@ -10,16 +10,23 @@
   </header>
 
   <main>
-    <div class="jumbotron">
-      <h1>This is great</h1>
-      <p>Welcome to templating using EJS</p>
+    <div class="container">
+      <div class="col-sm-6 col-sm-offset-3">
+        <form action="/login" method="post" enctype="application/x-www-form-urlencoded">
+          <div class="form-group">
+            <label for="pwd">Email:</label>
+            <input type="text" class="form-control" id="email" name="username"/>
+            <label for="pwd">Password:</label>
+            <input type="password" class="form-control" id="pass" name="password"/>
+          </div>
+          <button type="submit" class="btn btn-default">Submit</button>
+        </form>
+      </div>
     </div>
   </main>
-
   <footer>
     <% include ../partials/footer %>
   </footer>
-
 </body>
 
 </html>
