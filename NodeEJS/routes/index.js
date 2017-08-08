@@ -1,73 +1,60 @@
-var express = require('express');
-var router = express.Router();
-var bodyParser = require('body-parser'); //Parses POST
-var methodOverride = require('method-override'); //manipulate POST
+var User    = require('../model/user');
 
-var isAuthenticated = function(req, res, next){
-  //Si el usuario esta autenticado en la sesion, llamamos a la function
-  //next() para llamar al siguiente 'Request Handler'.
-  //Passport agrega este metodo al 'Request object'
-  if(req.isAuthenticated()){
-    return next();
-  }
-  //Si el usuario no está autenticado se redirecciona a la pagina de login
-}
-
-module.exports = function(passport){
-  router.use(bodyParser.urlencoded({ extended: true}))
-  router.use(methodOverride( (req, res) =>{
-      if(req.body && typeof req.body === 'object' && '_method' in req.body){
-        var method = req.body._method
-        delete req.body_method
-        return method
-      }
-    }
-  ))
-
-  router.get('/', function(req, res, next) {
-    res.render('pages/index', {message : req.flash('message')});
+module.exports = function(app, passport){
+  //Página de inicio
+  app.get('/', (req, res)=>{
+    console.log("Enum types: ");
+    var array = User.schema.path('accType').enumValues;
+    console.log(array.length);
+    res.render('pages/index.ejs');
   });
 
-  router.get('/about', (req, res, next) =>{
-    res.render('pages/about');
+  //Login Form
+  app.get('/login', (req, res)=>{
+    res.render('pages/login.ejs', {message: req.flash('loginMessage')});
   });
 
-  router.get('/login', (req, res, next) =>{
-    res.render('pages/login',{message:"holi"});
-  });
-
-  router.post('/login', passport.authenticate('login', {
-    successRedirect: '/home',
-    failureRedirect: '/',
+  //Procesar el formulario del login
+  app.post('/login', passport.authenticate('local-login',{
+    successRedirect: '/profile',
+    failureRedirect: '/login',
     failureFlash: true
   }));
 
-  router.get('/register', (req, res, next) =>{
-    res.render('pages/register');
+  //Formulario de Registro
+  app.get('/signup', (req, res)=>{
+    res.render('pages/signup.ejs', {message: req.flash('signupMessage')});
   });
 
-  router.get('/signup', (req, res)=>{
-    res.render('register',{message: req.flash('message')});
-  });
+  //Procesar formulario de Registro
 
-  router.post('/signup', passport.authenticate('signup', {
-    successRedirect: '/home',
+  app.post('/signup', passport.authenticate('local-signup', {
+    successRedirect: '/profile',
     failureRedirect: '/signup',
     failureFlash: true
   }));
 
-  router.get('/home', isAuthenticated, (req, res)=>{
-    res.render('pages/home', {user: req.user});
-  })
 
-  router.get('/signout', (req, res) =>{
+  //Perfil
+  //Se protege para que el usuario acceda al iniciar sesión solamente
+  //Se verifica con la funcion isLoggedIn
+  app.get('/profile', isLoggedIn, (req, res)=>{
+    res.render('pages/profile.ejs',{
+      user: req.user
+    });
+  });
+
+  //Salir de la sesión
+  app.get('/logout', (req, res)=>{
     req.logout();
     res.redirect('/');
   });
+};
 
-  return router;
+//Funcion del middleware para asegurar que el usuario ha iniciado sesion
+function isLoggedIn(req, res, next){
+  if(req.isAuthenticated()){
+    return next();
+  }
+  res.redirect('/');
 }
-
-
-
-//module.exports = router;
