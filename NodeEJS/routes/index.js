@@ -9,6 +9,10 @@ module.exports = function (app, passport) {
     res.render('pages/index.ejs');
   });
 
+  app.get('/pre-signup', (req, res)=> {
+    res.render('pages/pre_signup.ejs');
+  });
+
   //Login Form
   app.get('/login', (req, res)=> {
     res.render('pages/login.ejs', { message: req.flash('loginMessage') });
@@ -56,6 +60,6 @@ function isLoggedIn(req, res, next) {
   if (req.isAuthenticated()) {
     return next();
   }
-  
+
   res.redirect('/');
 }
