@@ -18,16 +18,16 @@
     "ejs": "^2.5.7",
     "express": "^4.15.3",
     "express-session": "^1.15.5",
+    "harmony-reflect": "^1.4.2",
     "logger": "0.0.1",
     "method-override": "^2.3.9",
     "mongoose": "^4.11.5",
     "mongoose-schema-extend": "^0.2.2",
     "morgan": "^1.8.2",
     "nodemon": "^1.11.0",
+    "owl-deepcopy": "~0.0.1",
     "passport": "^0.3.2",
     "passport-local": "^1.0.0",
-    "path": "^0.12.7",
-    "harmony-reflect": "^1.4.2",
-    "owl-deepcopy": "~0.0.1"
+    "path": "^0.12.7"
   }
 }
