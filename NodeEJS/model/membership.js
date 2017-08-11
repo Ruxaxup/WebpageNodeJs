@@ -13,7 +13,7 @@ var membershipSchema = new Schema({
                       'B',
                       'C'
                     ],
-                    default:'A'}
+                    default:'A' }
 });
 
 module.exports = mongoose.model('Membership', membershipSchema);
