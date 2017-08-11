@@ -24,6 +24,7 @@
     "mongoose": "^4.11.5",
     "mongoose-schema-extend": "^0.2.2",
     "morgan": "^1.8.2",
+    "nconf": "^0.8.4",
     "nodemon": "^1.11.0",
     "owl-deepcopy": "~0.0.1",
     "passport": "^0.3.2",

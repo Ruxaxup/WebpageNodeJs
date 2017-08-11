@@ -1,4 +1,5 @@
 var User    = require('../model/user');
+var Membership = require('../model/membership')
 
 module.exports = function (app, passport) {
   //Página de inicio
@@ -34,7 +35,7 @@ module.exports = function (app, passport) {
 
   app.post('/signup', passport.authenticate('local-signup', {
     successRedirect: '/profile',
-    failureRedirect: '/signup',
+    failureRedirect: '/',
     failureFlash: true
   }));
 
@@ -43,15 +44,27 @@ module.exports = function (app, passport) {
   //Se protege para que el usuario acceda al iniciar sesión solamente
   //Se verifica con la funcion isLoggedIn
   app.get('/profile', isLoggedIn, (req, res)=> {
-    res.render('pages/profile.ejs', {
-      user: req.user
+    process.nextTick(() => {
+      Membership.findById(req.user.membership, (err, membership)=>{
+        if(err){
+          console.log(err);
+        }
+        console.log(membership);
+        res.render('pages/profile.ejs', {
+          user: req.user,
+          membership: membership
+        });
+
+      });
+
     });
-  });
+    }
+  );
 
   //Salir de la sesión
   app.get('/logout', (req, res)=> {
     req.logout();
-    res.redirect('/');
+    res.redirect('/login');
   });
 };
 

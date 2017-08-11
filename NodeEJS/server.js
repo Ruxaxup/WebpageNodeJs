@@ -13,7 +13,19 @@ var mongoose = require('mongoose');
 var flash = require('connect-flash');
 
 //Establecemos la conexion a la base de datos
-mongoose.connect(dbConfig.url);
+console.log("Connecting to the database");
+const user = dbConfig.mongoUser;
+const pass = dbConfig.mongoPass;
+const host = dbConfig.mongoHost;
+const mongoPort = dbConfig.mongoPort;
+
+let uri = `mongodb://${user}:${pass}@${host}:${mongoPort}`;
+if(dbConfig.mongoDatabase){
+  uri = `${uri}/${dbConfig.mongoDatabase}`;
+}
+console.log(`MONGO URI: ${uri}`)
+//mongoose.connect(uri);
+mongoose.connect(uri);
 
 //Establecemos la ruta de la carpeta de vistas
 app.set('views', path.join(__dirname, 'views'));
