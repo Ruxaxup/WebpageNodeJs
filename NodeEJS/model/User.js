@@ -10,7 +10,7 @@ var userSchema = new mongoose.Schema({
   password:     {type: String, required: true},
   accType:      {type: String,
                   enum : [
-                    'member','admin','doctor',
+                    'member','default','admin','doctor',
                     'recepcionist', 'capturist',
                     'memberAgent','doctorAgent'],
                   default:'member',

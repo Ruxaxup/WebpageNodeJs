@@ -1,6 +1,8 @@
 var LocalStrategy = require('passport-local').Strategy;
 var User = require('../model/user');
 var Membership = require('../model/membership');
+var userController = require('../controllers/user');
+
 module.exports = function(passport) {
   //Serializar el usuario
 
@@ -39,7 +41,6 @@ module.exports = function(passport) {
           if (user) {
             return done(null, false, req.flash('signupMessage', 'That email is already taken.'));
           } else {
-            console.log("==REGISTRANDO USUARIO");
             //Si no existe, lo creamos
             var newUser = new User();
             var memberId = req.body.memberID;
@@ -49,9 +50,9 @@ module.exports = function(passport) {
             newUser.momLastName = req.body.momLastName;
             newUser.birthday = req.body.birthday;
             newUser.email = email;
-
             newUser.cellphone = req.body.cellphone;
             newUser.cp = req.body.cp;
+
             if (memberId) {
               //Creamos la membresia
               var newMember = new Membership();
@@ -61,7 +62,6 @@ module.exports = function(passport) {
               newMember.expiringDate = Date.now();
               newMember.expiringDate = new Date(
               newMember.expiringDate.setTime(newMember.startDate.getTime() + 365 * 86400000));
-              console.log(newMember);
 
               //Guardamos la membresia
               newMember.save((err) => {
@@ -82,7 +82,7 @@ module.exports = function(passport) {
                 });
               });
             } else {
-              //save the userSchema
+              //Si no es un miembro, es un usuario con otro tipo de cuenta
               newUser.password = newUser.generateHash(password);
               newUser.save(function(err) {
                 if (err) {
@@ -118,9 +118,10 @@ module.exports = function(passport) {
         if (!user.validPassword(password)) {
           return done(null, false, req.flash('loginMessage', 'Opps! Wrong password'));
         }
+        console.log("Usuario autenticado");
         return done(null, user);
 
-      }        
+      }
       ); //findOne
     } //finCallback
   )); //passport.use

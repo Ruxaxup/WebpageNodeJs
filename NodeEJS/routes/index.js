@@ -1,22 +1,29 @@
-var User    = require('../model/user');
-var Membership = require('../model/membership')
+'use strict'
 
-module.exports = function (app, passport) {
+var User = require('../model/user');
+var Membership = require('../model/membership')
+var userController = require('../controllers/user');
+
+module.exports = function(app, passport) {
   //Página de inicio
-  app.get('/', (req, res)=> {
-    console.log('Enum types: ');
-    var array = User.schema.path('accType').enumValues;
-    console.log(array.length);
-    res.render('pages/index.ejs');
+  app.get('/', (req, res) => {
+    res.render('pages/index.ejs',{
+      user: req.user
+    });
   });
 
-  app.get('/pre-signup', (req, res)=> {
+  app.get('/pre-signup', (req, res) => {
     res.render('pages/pre_signup.ejs');
   });
 
+  /****************************************************
+   *******  PASSPORT CONTROLLER   **********************
+   *****************************************************/
   //Login Form
-  app.get('/login', (req, res)=> {
-    res.render('pages/login.ejs', { message: req.flash('loginMessage') });
+  app.get('/login', (req, res) => {
+    res.render('pages/login.ejs', {
+      message: req.flash('loginMessage')
+    });
   });
 
   //Procesar el formulario del login
@@ -27,12 +34,16 @@ module.exports = function (app, passport) {
   }));
 
   //Formulario de Registro
-  app.get('/signup', (req, res)=> {
-    res.render('pages/signup.ejs', { message: req.flash('signupMessage') });
+  app.get('/signup/:type', (req, res) => {
+    console.log(req.params.type);
+    res.render('pages/signup.ejs', {
+      message: req.flash('signupMessage'),
+      user: req.user,
+      type: req.params.type
+    });
   });
 
   //Procesar formulario de Registro
-
   app.post('/signup', passport.authenticate('local-signup', {
     successRedirect: '/profile',
     failureRedirect: '/',
@@ -43,26 +54,10 @@ module.exports = function (app, passport) {
   //Perfil
   //Se protege para que el usuario acceda al iniciar sesión solamente
   //Se verifica con la funcion isLoggedIn
-  app.get('/profile', isLoggedIn, (req, res)=> {
-    process.nextTick(() => {
-      Membership.findById(req.user.membership, (err, membership)=>{
-        if(err){
-          console.log(err);
-        }
-        console.log(membership);
-        res.render('pages/profile.ejs', {
-          user: req.user,
-          membership: membership
-        });
-
-      });
-
-    });
-    }
-  );
+  app.get('/profile', isLoggedIn, userController.loadProfile);
 
   //Salir de la sesión
-  app.get('/logout', (req, res)=> {
+  app.get('/logout', (req, res) => {
     req.logout();
     res.redirect('/login');
   });
